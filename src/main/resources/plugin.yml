@@ -1,0 +1,4 @@
+name: Staffchat
+version: '${version}'
+main: net.ibxnjadev.staffchat.Staffchat
+api-version: 1.17
