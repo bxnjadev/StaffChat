@@ -54,7 +54,7 @@ public final class StaffChat extends JavaPlugin {
         }
 
         Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), new ObjectJacksonAdapter());
-        StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, translatorProvider);
+        StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, translatorProvider, configuration);
 
         messenger.intercept(StaffChatHandler.CHANNEL_NAME, StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
 
