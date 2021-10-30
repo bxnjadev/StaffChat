@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class Configuration extends YamlConfiguration {
@@ -38,7 +39,14 @@ public class Configuration extends YamlConfiguration {
 
     @NotNull
     public String getString(String path) {
-        return ChatColor.translateAlternateColorCodes('&', super.getString(path));
+
+        String message = super.getString(path);
+
+        if (message == null) {
+            return "Invalid path " + path + " is incorrect";
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public String getStringWithoutColors(String path) {
