@@ -4,24 +4,28 @@ import me.fixeddev.commandflow.annotated.CommandClass;
 import me.fixeddev.commandflow.annotated.annotation.Command;
 import me.fixeddev.commandflow.annotated.annotation.Text;
 import me.fixeddev.commandflow.bukkit.annotation.Sender;
+import net.ibxnjadev.staffchat.StaffChatHandler;
+import net.ibxnjadev.staffchat.helper.Configuration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.Messenger;
 
+@Command(names = {"staffchat","sc"}, permission = "staff.chat.write")
 public class StaffChatCommand implements CommandClass {
 
-    private final Messenger messenger;
+    private final StaffChatHandler staffChatHandler;
+    private final Configuration configuration;
 
-    public StaffChatCommand(Messenger messenger) {
-        this.messenger = messenger;
+    public StaffChatCommand(StaffChatHandler staffChatHandler, Configuration configuration) {
+        this.staffChatHandler = staffChatHandler;
+        this.configuration = configuration;
     }
 
     @Command(names = "")
     public void main(@Sender Player player) {
-
+        configuration.getColoredList("help").forEach(player::sendMessage);
     }
 
     public void staffChat(@Sender Player player, @Text String message) {
-
+        staffChatHandler.write(player, message);
     }
 
 }

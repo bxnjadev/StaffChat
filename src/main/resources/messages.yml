@@ -1,0 +1,2 @@
+format: "[StaffChat] &f%player%&r: %message%"
+help: "/staffchat <message>"
