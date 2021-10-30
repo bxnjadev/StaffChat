@@ -24,7 +24,7 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
     }
 
     @Override
-    public void write(Player sender, String message) {
+    public void write(String sender, String message) {
 
         StaffChatMessage staffChatMessage = new StaffChatMessage(
                 sender.toString(),
