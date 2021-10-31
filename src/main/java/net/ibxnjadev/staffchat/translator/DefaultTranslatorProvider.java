@@ -12,10 +12,10 @@ public class DefaultTranslatorProvider implements TranslatorProvider {
     }
 
     @Override
-    public String provide(Player player, String message) {
+    public String provide(Player player, String sender, String message) {
         return configuration.getString(
                         PATH
-                ).replace("%player%", player.getName())
+                ).replace("%player%", sender)
                 .replace("%message%", message);
     }
 

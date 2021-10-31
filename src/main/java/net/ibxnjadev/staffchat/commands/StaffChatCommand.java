@@ -25,7 +25,9 @@ public class StaffChatCommand implements CommandClass {
         configuration.getColoredList("help").forEach(sender::sendMessage);
     }
 
+    @Command(names = "")
     public void staffChat(@Sender CommandSender sender, @Text String message) {
+        System.out.println(">> " + message);
         staffChatHandler.write(sender.getName(), message);
     }
 

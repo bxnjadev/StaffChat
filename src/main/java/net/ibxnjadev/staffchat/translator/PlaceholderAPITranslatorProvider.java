@@ -13,12 +13,12 @@ public class PlaceholderAPITranslatorProvider implements TranslatorProvider {
     }
 
     @Override
-    public String provide(Player player, String message) {
+    public String provide(Player player, String sender,  String message) {
         return PlaceholderAPI.setPlaceholders(player,
                 configuration.getString(
                         PATH
                 ).replace(
-                        "%player%", player.toString()
+                        "%player%", sender
                 ).replace("%message%", message));
     }
 

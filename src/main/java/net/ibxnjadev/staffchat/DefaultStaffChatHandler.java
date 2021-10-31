@@ -40,7 +40,7 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission(PERMISSION_RECEIVE_NAME)) {
                 player.sendMessage(
-                        translatorProvider.provide(player, staffChatMessage.getMessage())
+                        translatorProvider.provide(player, staffChatMessage.getPlayer(), staffChatMessage.getMessage())
                 );
 
                 if (configuration.getBoolean("notification-sound.enable")) {

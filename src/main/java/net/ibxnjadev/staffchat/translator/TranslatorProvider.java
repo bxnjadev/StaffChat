@@ -6,6 +6,6 @@ public interface TranslatorProvider {
 
     String PATH = "format";
 
-    String provide(Player player, String message);
+    String provide(Player player, String sender, String message);
 
 }

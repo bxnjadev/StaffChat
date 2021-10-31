@@ -1,3 +1,3 @@
-name: Staffchat
+name: StaffChat
 version: '${version}'
 main: net.ibxnjadev.staffchat.StaffChat
