@@ -1,16 +1,15 @@
 package net.ibxnjadev.staffchat.helper;
 
+import com.avaje.ebean.validation.NotNull;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 
 public class Configuration extends YamlConfiguration {
@@ -53,7 +52,6 @@ public class Configuration extends YamlConfiguration {
         return super.getString(path);
     }
 
-    @NotNull
     public List<String> getColoredList(String path) {
         List<String> coloredList = new ArrayList<>();
         super.getStringList(path).forEach(text -> {

@@ -1,7 +1,7 @@
 package net.ibxnjadev.staffchat.messenger;
 
 import net.ibxnjadev.staffchat.StaffChatHandler;
-import net.ibxnjadev.vmesseger.universal.Interceptor;
+import net.ibxnjadev.vmessenger.universal.Interceptor;
 
 public class StaffChatMessageInterceptor implements Interceptor<StaffChatMessage> {
 

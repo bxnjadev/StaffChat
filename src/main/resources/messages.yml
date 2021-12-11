@@ -1,2 +1,7 @@
 format: "[StaffChat] &f%player%&r: %message%"
 help: "/staffchat <message>"
+pinned: "StaffChat: Pinned"
+un-pinned: "StaffChat: Un-Pinned"
+visibility-enable: "StaffChat: Visibility Enable"
+visibility-disable: "StaffChat: Visibility Disable"
+reload: "Reloaded!"

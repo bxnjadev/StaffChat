@@ -1,3 +1,7 @@
 name: StaffChat
 version: '${version}'
 main: net.ibxnjadev.staffchat.StaffChat
+commands:
+  staffchat:
+    aliases: [sc]
+    usage: "/staffchat <message>"

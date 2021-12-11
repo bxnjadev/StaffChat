@@ -4,4 +4,4 @@ redis:
   password: ""
 notification-sound:
   enable: false
-  sound:
+  sound: BURP

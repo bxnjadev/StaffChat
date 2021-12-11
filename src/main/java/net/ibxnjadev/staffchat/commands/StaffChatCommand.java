@@ -1,34 +1,62 @@
 package net.ibxnjadev.staffchat.commands;
 
-import me.fixeddev.commandflow.annotated.CommandClass;
-import me.fixeddev.commandflow.annotated.annotation.Command;
-import me.fixeddev.commandflow.annotated.annotation.Text;
-import me.fixeddev.commandflow.bukkit.annotation.Sender;
 import net.ibxnjadev.staffchat.StaffChatHandler;
 import net.ibxnjadev.staffchat.helper.Configuration;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@Command(names = {"staffchat","sc"}, permission = "staff.chat.write")
-public class StaffChatCommand implements CommandClass {
+import java.util.Locale;
+
+public class StaffChatCommand implements CommandExecutor {
 
     private final StaffChatHandler staffChatHandler;
     private final Configuration configuration;
+    private final Configuration messages;
 
-    public StaffChatCommand(StaffChatHandler staffChatHandler, Configuration configuration) {
+    public StaffChatCommand(StaffChatHandler staffChatHandler, Configuration configuration, Configuration messages) {
         this.staffChatHandler = staffChatHandler;
         this.configuration = configuration;
+        this.messages = messages;
     }
 
-    @Command(names = "")
-    public void main(@Sender CommandSender sender) {
-        configuration.getColoredList("help").forEach(sender::sendMessage);
-    }
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-    @Command(names = "")
-    public void staffChat(@Sender CommandSender sender, @Text String message) {
-        System.out.println(">> " + message);
-        staffChatHandler.write(sender.getName(), message);
+        if (args.length == 0) {
+
+            if (sender instanceof Player) {
+                staffChatHandler.pinUpChat((Player) sender);
+                return true;
+            }
+
+            sender.sendMessage(messages.getString("help"));
+            return true;
+        }
+
+        if (args.length == 1) {
+            switch (args[0].toLowerCase(Locale.ROOT)) {
+                case "visibility":
+                    if (sender instanceof Player) {
+                        staffChatHandler.executeVisibilityChat((Player) sender);
+                        break;
+                    }
+                case "reload":
+                    configuration.reload();
+                    sender.sendMessage(messages.getString("reload"));
+                    break;
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (String s : args) {
+                stringBuilder.append(s).append(" ");
+            }
+
+            staffChatHandler.write(sender.getName(), stringBuilder.toString());
+        }
+        return true;
     }
 
 }

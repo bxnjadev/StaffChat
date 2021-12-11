@@ -1,30 +1,21 @@
 package net.ibxnjadev.staffchat;
 
-import me.fixeddev.commandflow.CommandManager;
-import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilder;
-import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilderImpl;
-import me.fixeddev.commandflow.annotated.part.PartInjector;
-import me.fixeddev.commandflow.annotated.part.defaults.DefaultsModule;
-import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
-import me.fixeddev.commandflow.bukkit.factory.BukkitModule;
-import me.fixeddev.commandflow.command.Command;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.ibxnjadev.staffchat.commands.StaffChatCommand;
 import net.ibxnjadev.staffchat.helper.Configuration;
+import net.ibxnjadev.staffchat.listener.PlayerChatListener;
 import net.ibxnjadev.staffchat.messenger.StaffChatMessage;
 import net.ibxnjadev.staffchat.messenger.StaffChatMessageInterceptor;
 import net.ibxnjadev.staffchat.redis.RedisClientWrapper;
 import net.ibxnjadev.staffchat.translator.DefaultTranslatorProvider;
 import net.ibxnjadev.staffchat.translator.PlaceholderAPITranslatorProvider;
 import net.ibxnjadev.staffchat.translator.TranslatorProvider;
-import net.ibxnjadev.vmesseger.universal.Messenger;
-import net.ibxnjadev.vmesseger.universal.serialize.ObjectJacksonAdapter;
 import net.ibxnjadev.vmessenger.redis.RedisMessenger;
+import net.ibxnjadev.vmessenger.universal.Messenger;
+import net.ibxnjadev.vmessenger.universal.serialize.ObjectJacksonAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class StaffChat extends JavaPlugin {
 
@@ -33,6 +24,8 @@ public final class StaffChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        ObjectMapper mapper = new ObjectMapper();
 
         Configuration messages = new Configuration(this, "messages");
         Configuration configuration = new Configuration(this, "config");
@@ -44,7 +37,6 @@ public final class StaffChat extends JavaPlugin {
         );
 
         redisClientWrapper.establishConnection();
-
         jedisPool = redisClientWrapper.getClient();
 
         TranslatorProvider translatorProvider = new DefaultTranslatorProvider(messages);
@@ -53,20 +45,12 @@ public final class StaffChat extends JavaPlugin {
             translatorProvider = new PlaceholderAPITranslatorProvider(messages);
         }
 
-        Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), new ObjectJacksonAdapter());
-        StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, translatorProvider, configuration);
+        Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), new ObjectJacksonAdapter(), mapper);
+        StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, redisClientWrapper, translatorProvider, messages, configuration);
 
         messenger.intercept(StaffChatHandler.CHANNEL_NAME, StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
-
-        PartInjector partInjector = PartInjector.create();
-        partInjector.install(new BukkitModule());
-        partInjector.install(new DefaultsModule());
-
-        AnnotatedCommandTreeBuilder annotatedCommandTreeBuilder = new AnnotatedCommandTreeBuilderImpl(partInjector);
-        CommandManager commandManager = new BukkitCommandManager(getName());
-
-        List<Command> commands = new ArrayList<>(annotatedCommandTreeBuilder.fromClass(new StaffChatCommand(staffChatHandler, messages)));
-        commandManager.registerCommands(commands);
+        getCommand("staffchat").setExecutor(new StaffChatCommand(staffChatHandler, configuration, messages));
+        Bukkit.getPluginManager().registerEvents(new PlayerChatListener(staffChatHandler), this);
 
     }
 

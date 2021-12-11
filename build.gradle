@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'net.ibxnjadev.staffchat'
-version = '1.0-SNAPSHOT'
+version = '0.0.5'
 
 repositories {
     mavenCentral()
@@ -32,12 +32,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.9.2'
-    compileOnly 'redis.clients:jedis:3.6.1'
+    compileOnly 'redis.clients:jedis:3.6.3'
     implementation 'net.ibxnjadev.vmessenger.redis:redis:0.1.0'
     implementation 'net.ibxnjadev.vmessenger.universal:universal:0.1.0'
-    implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
 }
 
 def targetJavaVersion = 8

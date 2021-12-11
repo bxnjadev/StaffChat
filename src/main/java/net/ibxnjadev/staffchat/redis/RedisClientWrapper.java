@@ -1,8 +1,11 @@
 package net.ibxnjadev.staffchat.redis;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
+import java.util.function.Consumer;
 
 public class RedisClientWrapper {
 
@@ -35,6 +38,12 @@ public class RedisClientWrapper {
             System.out.println("Error connecting");
         }
 
+    }
+
+    public void execute(Consumer<Jedis> jedisConsumer) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedisConsumer.accept(jedis);
+        }
     }
 
     public JedisPool getClient() {
