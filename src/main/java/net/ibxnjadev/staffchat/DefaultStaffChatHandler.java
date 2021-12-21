@@ -1,5 +1,7 @@
 package net.ibxnjadev.staffchat;
 
+import net.ibxnjadev.staffchat.event.StaffChatReceiveEvent;
+import net.ibxnjadev.staffchat.event.StaffChatSendMessageEvent;
 import net.ibxnjadev.staffchat.helper.Configuration;
 import net.ibxnjadev.staffchat.messenger.StaffChatMessage;
 import net.ibxnjadev.staffchat.redis.RedisClientWrapper;
@@ -10,6 +12,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultStaffChatHandler implements StaffChatHandler {
 
@@ -41,33 +46,37 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
     @Override
     public void write(String sender, String message) {
 
-        StaffChatMessage staffChatMessage = new StaffChatMessage(
-                sender,
-                message
-        );
+        StaffChatSendMessageEvent event = new StaffChatSendMessageEvent(sender, message);
+        Bukkit.getPluginManager().callEvent(event);
+
+        StaffChatMessage staffChatMessage = new StaffChatMessage(event.getSender(), event.getMessage());
 
         messenger.sendMessage(CHANNEL_NAME, staffChatMessage);
     }
 
     @Override
     public void executeMessage(StaffChatMessage staffChatMessage) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission(PERMISSION_RECEIVE_NAME)) {
-                if (hasCanChat(player)) {
-                    player.sendMessage(
-                            translatorProvider.provide(player, staffChatMessage.getPlayer(), staffChatMessage.getMessage())
+
+        StaffChatReceiveEvent staffChatReceiveEvent =
+                new StaffChatReceiveEvent(getPlayersWithPermission(), staffChatMessage.getPlayer(), staffChatMessage.getMessage());
+
+        Bukkit.getPluginManager().callEvent(staffChatReceiveEvent);
+
+        for (Player player : staffChatReceiveEvent.getPlayers()) {
+            if (hasCanChat(player)) {
+                player.sendMessage(
+                        translatorProvider.provide(player, staffChatMessage.getPlayer(), staffChatMessage.getMessage())
+                );
+
+                if (messages.getBoolean("notification-sound.enable")) {
+                    Sound sound = Sound.valueOf(configuration.getString("notification-sound.sound"));
+
+                    player.playSound(
+                            player.getLocation(),
+                            sound,
+                            5L,
+                            5L
                     );
-
-                    if (messages.getBoolean("notification-sound.enable")) {
-                        Sound sound = Sound.valueOf(configuration.getString("notification-sound.sound"));
-
-                        player.playSound(
-                                player.getLocation(),
-                                sound,
-                                5L,
-                                5L
-                        );
-                    }
                 }
             }
         }
@@ -124,6 +133,18 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
             return !jedis.exists(VISIBILITY_CHAT_PREFIX + uuidString);
         }
 
+    }
+
+    private List<Player> getPlayersWithPermission() {
+        List<Player> players = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission(PERMISSION_RECEIVE_NAME)) {
+                players.add(player);
+            }
+        }
+
+        return players;
     }
 
 }
