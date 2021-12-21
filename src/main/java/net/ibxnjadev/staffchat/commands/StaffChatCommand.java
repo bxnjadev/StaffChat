@@ -11,6 +11,10 @@ import java.util.Locale;
 
 public class StaffChatCommand implements CommandExecutor {
 
+    private static final String PERMISSION_COMMAND = "staffchat.use";
+    private static final String PERMISSION_RELOAD_COMMAND = "staffchat.reload";
+    private static final String PERMISSION_VISIBILITY_COMMAND = "staffchat.visibility";
+
     private final StaffChatHandler staffChatHandler;
     private final Configuration configuration;
     private final Configuration messages;
@@ -23,40 +27,54 @@ public class StaffChatCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (hasPermission(sender, PERMISSION_COMMAND)) {
 
-        if (args.length == 0) {
+            if (args.length == 0) {
 
-            if (sender instanceof Player) {
-                staffChatHandler.pinUpChat((Player) sender);
+                if (sender instanceof Player) {
+                    staffChatHandler.pinUpChat((Player) sender);
+                    return true;
+                }
+
+                sender.sendMessage(messages.getString("help"));
                 return true;
             }
 
-            sender.sendMessage(messages.getString("help"));
-            return true;
-        }
-
-        if (args.length == 1) {
-            switch (args[0].toLowerCase(Locale.ROOT)) {
-                case "visibility":
-                    if (sender instanceof Player) {
-                        staffChatHandler.executeVisibilityChat((Player) sender);
+            if (args.length == 1) {
+                switch (args[0].toLowerCase(Locale.ROOT)) {
+                    case "visibility":
+                        if (sender instanceof Player) {
+                            if (hasPermission(sender, PERMISSION_VISIBILITY_COMMAND)) {
+                                staffChatHandler.executeVisibilityChat((Player) sender);
+                            }
+                            break;
+                        }
+                    case "reload":
+                        if (hasPermission(sender, PERMISSION_RELOAD_COMMAND)) {
+                            configuration.reload();
+                            sender.sendMessage(messages.getString("reload"));
+                        }
                         break;
-                    }
-                case "reload":
-                    configuration.reload();
-                    sender.sendMessage(messages.getString("reload"));
-                    break;
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (String s : args) {
+                    stringBuilder.append(s).append(" ");
+                }
+
+                staffChatHandler.write(sender.getName(), stringBuilder.toString());
             }
-
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (String s : args) {
-                stringBuilder.append(s).append(" ");
-            }
-
-            staffChatHandler.write(sender.getName(), stringBuilder.toString());
         }
         return true;
+    }
+
+    public boolean hasPermission(CommandSender sender, String permission) {
+        if (sender.hasPermission(permission)) {
+            return true;
+        }
+        sender.sendMessage(messages.getString("no-permission"));
+        return false;
     }
 
 }
