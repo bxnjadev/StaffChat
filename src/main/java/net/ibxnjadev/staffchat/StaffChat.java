@@ -1,6 +1,5 @@
 package net.ibxnjadev.staffchat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.ibxnjadev.staffchat.commands.StaffChatCommand;
 import net.ibxnjadev.staffchat.helper.Configuration;
 import net.ibxnjadev.staffchat.listener.PlayerChatListener;
@@ -13,6 +12,7 @@ import net.ibxnjadev.staffchat.translator.TranslatorProvider;
 import net.ibxnjadev.vmessenger.redis.RedisMessenger;
 import net.ibxnjadev.vmessenger.universal.Messenger;
 import net.ibxnjadev.vmessenger.universal.serialize.ObjectJacksonAdapter;
+import net.ibxnjadev.vmessenger.universal.DefaultInterceptorHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
@@ -24,9 +24,7 @@ public final class StaffChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-        ObjectMapper mapper = new ObjectMapper();
-
+        
         Configuration messages = new Configuration(this, "messages");
         Configuration configuration = new Configuration(this, "config");
 
@@ -45,7 +43,13 @@ public final class StaffChat extends JavaPlugin {
             translatorProvider = new PlaceholderAPITranslatorProvider(messages);
         }
 
-        Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), new ObjectJacksonAdapter(), mapper);
+        ObjectJacksonAdapter jacksonAdapter = new ObjectJacksonAdapter();
+        DefaultInterceptorHandler interceptorHandler = new DefaultInterceptorHandler(jacksonAdapter);
+
+        Messenger messenger =
+                new RedisMessenger(
+                        CHANNEL_NAME, interceptorHandler, redisClientWrapper.getClient(), jacksonAdapter);
+        
         StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, redisClientWrapper, translatorProvider, messages, configuration);
 
         messenger.intercept(StaffChatHandler.CHANNEL_NAME, StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
