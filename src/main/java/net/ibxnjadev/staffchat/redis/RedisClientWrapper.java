@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 
 public class RedisClientWrapper {
 
+    private Jedis jedis;
     private JedisPool jedisPool;
 
     private final String host, password;
@@ -23,12 +24,14 @@ public class RedisClientWrapper {
     public void establishConnection() {
 
         try {
+            jedis = new Jedis(host, port);
             JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
             jedisPoolConfig.setMaxTotal(8);
 
             JedisPool jedisPool;
             if (password != null && !password.trim().isEmpty()) {
                 jedisPool = new JedisPool(jedisPoolConfig, host, port, 2000, password);
+                jedis.auth(password);
             } else {
                 jedisPool = new JedisPool(jedisPoolConfig, host, port, 2000);
             }
@@ -48,6 +51,10 @@ public class RedisClientWrapper {
 
     public JedisPool getClient() {
         return jedisPool;
+    }
+
+    public Jedis getJedis() {
+        return jedis;
     }
 
 }

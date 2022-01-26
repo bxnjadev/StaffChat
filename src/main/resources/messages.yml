@@ -1,4 +1,5 @@
 format: "[StaffChat] &f%player%&r: %message%"
+format-hover: "Click to reply"
 help: "/staffchat <message>"
 pinned: "StaffChat: Pinned"
 un-pinned: "StaffChat: Un-Pinned"

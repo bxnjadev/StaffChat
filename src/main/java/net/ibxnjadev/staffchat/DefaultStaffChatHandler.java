@@ -3,10 +3,12 @@ package net.ibxnjadev.staffchat;
 import net.ibxnjadev.staffchat.event.StaffChatReceiveEvent;
 import net.ibxnjadev.staffchat.event.StaffChatSendMessageEvent;
 import net.ibxnjadev.staffchat.helper.Configuration;
+import net.ibxnjadev.staffchat.helper.TextComponentBuilder;
 import net.ibxnjadev.staffchat.messenger.StaffChatMessage;
 import net.ibxnjadev.staffchat.redis.RedisClientWrapper;
 import net.ibxnjadev.staffchat.translator.TranslatorProvider;
 import net.ibxnjadev.vmessenger.universal.Messenger;
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -64,8 +66,15 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
 
         for (Player player : staffChatReceiveEvent.getPlayers()) {
             if (hasCanChat(player)) {
-                player.sendMessage(
-                        translatorProvider.provide(player, staffChatMessage.getPlayer(), staffChatMessage.getMessage())
+
+                player.spigot().sendMessage(
+                        TextComponentBuilder
+                                .builder(
+                                        translatorProvider.provide(player, staffChatMessage.getPlayer(), staffChatMessage.getMessage())
+                                )
+                                .hover(messages.getString("format-hover"))
+                                .clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sc ")
+                                .build()
                 );
 
                 if (messages.getBoolean("notification-sound.enable")) {
