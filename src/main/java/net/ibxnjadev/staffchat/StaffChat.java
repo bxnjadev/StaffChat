@@ -24,9 +24,7 @@ public final class StaffChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-        ObjectMapper mapper = new ObjectMapper();
-
+        
         Configuration messages = new Configuration(this, "messages");
         Configuration configuration = new Configuration(this, "config");
 
@@ -45,7 +43,10 @@ public final class StaffChat extends JavaPlugin {
             translatorProvider = new PlaceholderAPITranslatorProvider(messages);
         }
 
-        Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), redisClientWrapper.getJedis(), new ObjectJacksonAdapter(), mapper);
+        ObjectJacksonAdapter jacksonAdapter = new ObjectJacksonAdapter();
+
+        Messenger messenger = new RedisMessenger(CHANNEL_NAME, redisClientWrapper.getClient(), redisClientWrapper.getJedis(), jacksonAdapter, new ObjectMapper());
+
         StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, redisClientWrapper, translatorProvider, messages, configuration);
 
         messenger.intercept(StaffChatHandler.CHANNEL_NAME, StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
