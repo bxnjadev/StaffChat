@@ -53,7 +53,7 @@ public class DefaultStaffChatHandler implements StaffChatHandler {
 
         StaffChatMessage staffChatMessage = new StaffChatMessage(event.getSender(), event.getMessage());
 
-        messenger.sendMessage(CHANNEL_NAME, staffChatMessage);
+        messenger.sendMessage(staffChatMessage);
     }
 
     @Override

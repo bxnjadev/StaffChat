@@ -49,7 +49,7 @@ public final class StaffChat extends JavaPlugin {
 
         StaffChatHandler staffChatHandler = new DefaultStaffChatHandler(messenger, redisClientWrapper, translatorProvider, messages, configuration);
 
-        messenger.intercept(StaffChatHandler.CHANNEL_NAME, StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
+        messenger.intercept(StaffChatMessage.class, new StaffChatMessageInterceptor(staffChatHandler));
         getCommand("staffchat").setExecutor(new StaffChatCommand(staffChatHandler, configuration, messages));
         Bukkit.getPluginManager().registerEvents(new PlayerChatListener(staffChatHandler), this);
 
