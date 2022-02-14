@@ -35,12 +35,12 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.9.2'
     compileOnly 'redis.clients:jedis:3.6.3'
-    implementation 'net.ibxnjadev.vmessenger.redis:redis:0.1.0'
-    implementation 'net.ibxnjadev.vmessenger.universal:universal:0.1.0'
+    implementation 'net.ibxnjadev.vmessenger.redis:redis:0.1.5'
+    implementation 'net.ibxnjadev.vmessenger.universal:universal:0.1.5'
     compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
 }
 
-def targetJavaVersion = 8
+def targetJavaVersion = 16
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
